@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Collections.Generic;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Trulioo.Client.V3.Models.Errors;
 using Trulioo.Client.V3.Models.Fields;
 using Trulioo.Client.V3.Models.Response;
@@ -14,50 +16,58 @@ namespace Trulioo.Client.V3.Tests
         [MemberData(nameof(IdvVerificationTestData))]
         public async Task IdvVerificationTest(VerifyRequest request, VerifyResult expectedResult)
         {
-            using var client = await BaseFact.GetTruliooClientAsync();
-            var response = await client.Verification.VerifyAsync(request);
-
-            Assert.NotNull(response);
+            using (var client = await BaseFact.GetTruliooClientAsync())
+            {
+                var response = await client.Verification.VerifyAsync(request);
+                Assert.NotNull(response);
+            }
         }
 
         [Theory(Skip = "Calls API")]
         [MemberData(nameof(TransactionRecordTestData))]
         public async Task GetTransactionRecordTest(string transactionRecordId, TransactionRecordResult expecTransactionRecordResult)
         {
-            using var client = await BaseFact.GetTruliooClientAsync();
-            var response = await client.Verification.GetTransactionRecordAsync(transactionRecordId);
-
-            Assert.Equal(expecTransactionRecordResult.TransactionID, response.TransactionID);
+            using (var client = await BaseFact.GetTruliooClientAsync())
+            {
+                var response = await client.Verification.GetTransactionRecordAsync(transactionRecordId);
+                Assert.Equal(expecTransactionRecordResult.TransactionID, response.TransactionID);
+            }
         }
 
         [Theory(Skip = "Calls API")]
         [MemberData(nameof(TransactionStatusTestData))]
         public async Task GetTransactionStatusTest(string transactionID, TransactionStatus expectedTransactionStatus)
         {
-            using var client = await BaseFact.GetTruliooClientAsync();
-            var response = await client.Verification.GetTransactionStatusAsync(transactionID);
+            using (var client = await BaseFact.GetTruliooClientAsync())
+            {
+                var response = await client.Verification.GetTransactionStatusAsync(transactionID);
 
-            Assert.Equal(expectedTransactionStatus.Status, response.Status);
-            Assert.Equal(expectedTransactionStatus.TransactionId, response.TransactionId);
-            Assert.Equal(expectedTransactionStatus.TransactionRecordId, response.TransactionRecordId);
-            Assert.Equal(expectedTransactionStatus.IsTimedOut, response.IsTimedOut);
+                Assert.Equal(expectedTransactionStatus.Status, response.Status);
+                Assert.Equal(expectedTransactionStatus.TransactionId, response.TransactionId);
+                Assert.Equal(expectedTransactionStatus.TransactionRecordId, response.TransactionRecordId);
+                Assert.Equal(expectedTransactionStatus.IsTimedOut, response.IsTimedOut);
+            }
         }
 
         [Fact(Skip = "Calls API")]
         public async Task GetPartialResults()
         {
-            using var client = await BaseFact.GetTruliooKYBClientAsync();
-            var response = await client.Verification.GetPartialResultsAsync(BaseFact.TransactionId);
-            Assert.NotNull(response);
+            using (var client = await BaseFact.GetTruliooKYBClientAsync())
+            {
+                var response = await client.Verification.GetPartialResultsAsync(BaseFact.TransactionId);
+                Assert.NotNull(response);
+            }
         }
 
         [Theory(Skip = "Calls API")]
         [MemberData(nameof(DownloadDocData))]
         public async Task GetDocumentDownload(string transactionRecordId, string fieldName)
         {
-            using var client = await BaseFact.GetTruliooClientAsync();
-            var response = await client.Verification.GetDocumentDownloadAsync(transactionRecordId, fieldName);
-            Assert.NotNull(response);
+            using (var client = await BaseFact.GetTruliooClientAsync())
+            {
+                var response = await client.Verification.GetDocumentDownloadAsync(transactionRecordId, fieldName);
+                Assert.NotNull(response);
+            }
             
         }
 
@@ -65,9 +75,11 @@ namespace Trulioo.Client.V3.Tests
         [MemberData(nameof(TransactionRecordDocumentData))]
         public async Task GetTransactionRecordDocument(string transactionRecordID, string documentField)
         {
-            using var client = await BaseFact.GetTruliooClientAsync();
-            var response = await client.Verification.GetTransactionRecordDocumentAsync(transactionRecordID, documentField);
-            Assert.NotNull(response);
+            using (var client = await BaseFact.GetTruliooClientAsync())
+            {
+                var response = await client.Verification.GetTransactionRecordDocumentAsync(transactionRecordID, documentField);
+                Assert.NotNull(response);
+            }
             
         }
 

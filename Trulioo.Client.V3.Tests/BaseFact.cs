@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Trulioo.Client.V3.Tests
 {

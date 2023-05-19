@@ -1,4 +1,8 @@
-﻿using Trulioo.Client.V3.Models.Business;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Trulioo.Client.V3.Models.Business;
 using Trulioo.Client.V3.Models.Fields;
 using Trulioo.Client.V3.Models.Verification;
 using Xunit;
@@ -13,36 +17,40 @@ namespace Trulioo.Client.V3.Tests
         public async void BusinessSearchTest(BusinessSearchRequest request, BusinessSearchResponse expectedResponse)
         {
             //Arrange
-            using var client = await BaseFact.GetTruliooKYBClientAsync();
-            var response = await client.TruliooBusiness.BusinessSearchAsync(request);
+            using (var client = await BaseFact.GetTruliooKYBClientAsync())
+            {
+                var response = await client.TruliooBusiness.BusinessSearchAsync(request);
 
-            Assert.Equal(expectedResponse.Record.RecordStatus, response.Record.RecordStatus);
-            Assert.Equal(expectedResponse.CountryCode, response.CountryCode);
+                Assert.Equal(expectedResponse.Record.RecordStatus, response.Record.RecordStatus);
+                Assert.Equal(expectedResponse.CountryCode, response.CountryCode);
 
-            Assert.Equal(expectedResponse.Record.DatasourceResults.Count(), response.Record.DatasourceResults.Count());
-            List<string> expectedDatasourcesNames = expectedResponse.Record.DatasourceResults.Select(x => x.DatasourceName).ToList();
-            List<string> actualDatasourceNames = response.Record.DatasourceResults.Select(x => x.DatasourceName).ToList();
-            Assert.True(expectedDatasourcesNames.All(actualDatasourceNames.Contains));
+                Assert.Equal(expectedResponse.Record.DatasourceResults.Count(), response.Record.DatasourceResults.Count());
+                List<string> expectedDatasourcesNames = expectedResponse.Record.DatasourceResults.Select(x => x.DatasourceName).ToList();
+                List<string> actualDatasourceNames = response.Record.DatasourceResults.Select(x => x.DatasourceName).ToList();
+                Assert.True(expectedDatasourcesNames.All(actualDatasourceNames.Contains));
 
-            List<string> expectedBusinessNameResults = expectedResponse.Record.DatasourceResults.SelectMany(datasource => datasource.Results.Select(result => result.BusinessName)).ToList();
-            List<string> actualBusinessNameResults = response.Record.DatasourceResults.SelectMany(datasource => datasource.Results.Select(result => result.BusinessName)).ToList();
-            Assert.Equal(expectedBusinessNameResults.Count(), actualBusinessNameResults.Count());
-            Assert.True(expectedBusinessNameResults.All(actualBusinessNameResults.Contains));
+                List<string> expectedBusinessNameResults = expectedResponse.Record.DatasourceResults.SelectMany(datasource => datasource.Results.Select(result => result.BusinessName)).ToList();
+                List<string> actualBusinessNameResults = response.Record.DatasourceResults.SelectMany(datasource => datasource.Results.Select(result => result.BusinessName)).ToList();
+                Assert.Equal(expectedBusinessNameResults.Count(), actualBusinessNameResults.Count());
+                Assert.True(expectedBusinessNameResults.All(actualBusinessNameResults.Contains));
 
-            List<string> expectedBusinessNumberResults = expectedResponse.Record.DatasourceResults.SelectMany(datasource => datasource.Results.Select(result => result.BusinessRegistrationNumber)).ToList();
-            List<string> actualBusinessNumberResults = response.Record.DatasourceResults.SelectMany(datasource => datasource.Results.Select(result => result.BusinessRegistrationNumber)).ToList();
-            Assert.Equal(expectedBusinessNumberResults.Count(), actualBusinessNumberResults.Count());
-            Assert.True(expectedBusinessNumberResults.All(actualBusinessNumberResults.Contains));
+                List<string> expectedBusinessNumberResults = expectedResponse.Record.DatasourceResults.SelectMany(datasource => datasource.Results.Select(result => result.BusinessRegistrationNumber)).ToList();
+                List<string> actualBusinessNumberResults = response.Record.DatasourceResults.SelectMany(datasource => datasource.Results.Select(result => result.BusinessRegistrationNumber)).ToList();
+                Assert.Equal(expectedBusinessNumberResults.Count(), actualBusinessNumberResults.Count());
+                Assert.True(expectedBusinessNumberResults.All(actualBusinessNumberResults.Contains));
+            }
         }
 
         [Theory(Skip = "Calls API")]
         [MemberData(nameof(BusinessVerifyTestData))]
         public async void BusinessVerifyTest(VerifyRequest request)
         {
-            using var client = await BaseFact.GetTruliooKYBClientAsync();
-            var response = await client.TruliooBusiness.BusinessVerifyAsync(request);
+            using (var client = await BaseFact.GetTruliooKYBClientAsync())
+            {
+                var response = await client.TruliooBusiness.BusinessVerifyAsync(request);
 
-            Assert.NotNull(response);
+                Assert.NotNull(response);
+            }
         }
 
         [Theory(Skip = "Calls API")]
@@ -54,18 +62,19 @@ namespace Trulioo.Client.V3.Tests
         [InlineData(null, "BC")]
         public async Task GetBusinessRegistrationNumbers(string countryCode, string jurisdiction)
         {
-            using var client = await BaseFact.GetTruliooKYBClientAsync();
+            using (var client = await BaseFact.GetTruliooKYBClientAsync())
+            {
 
-            if (string.IsNullOrWhiteSpace(countryCode) && !string.IsNullOrWhiteSpace(jurisdiction))
-            {
-                await Assert.ThrowsAsync<ArgumentException>(async () => await client.TruliooBusiness.GetBusinessRegistrationNumbersAsync(countryCode, jurisdiction));
+                if (string.IsNullOrWhiteSpace(countryCode) && !string.IsNullOrWhiteSpace(jurisdiction))
+                {
+                    await Assert.ThrowsAsync<ArgumentException>(async () => await client.TruliooBusiness.GetBusinessRegistrationNumbersAsync(countryCode, jurisdiction));
+                }
+                else
+                {
+                    var response = await client.TruliooBusiness.GetBusinessRegistrationNumbersAsync(countryCode, jurisdiction);
+                    Assert.NotNull(response);
+                }
             }
-            else
-            {
-                var response = await client.TruliooBusiness.GetBusinessRegistrationNumbersAsync(countryCode, jurisdiction);
-                Assert.NotNull(response);
-            }
-            
         }
 
         [Theory(Skip = "Calls API")]
@@ -74,9 +83,11 @@ namespace Trulioo.Client.V3.Tests
         [InlineData(" ")]
         public async Task GetCountryJOI(string countryCode)
         {
-            using var client = await BaseFact.GetTruliooKYBClientAsync();
-            var response = await client.TruliooBusiness.GetCountryJOIAsync(countryCode);
-            Assert.NotNull(response);
+            using (var client = await BaseFact.GetTruliooKYBClientAsync())
+            {
+                var response = await client.TruliooBusiness.GetCountryJOIAsync(countryCode);
+                Assert.NotNull(response);
+            }
         }
 
 

@@ -1,12 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-
+    <TargetFramework>netstandard2.0</TargetFramework>
     <IsPackable>false</IsPackable>
-
     <UserSecretsId>3ad72570-7ec6-448c-a736-1c5ea544ad0e</UserSecretsId>
   </PropertyGroup>
 
