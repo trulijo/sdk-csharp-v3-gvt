@@ -1,6 +1,6 @@
 # Trulioo SDK for C# Changelog
 
-## Version 1.0.2.0
+## Version 1.0.3.0
 Add Configuration
 Add GetAllDatasourcesAsync to Configuration
 Add Configuration unit test
