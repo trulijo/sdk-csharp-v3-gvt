@@ -3,14 +3,13 @@ using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
 using Trulioo.Client.V3.Enums;
 using Trulioo.Client.V3.Models.Errors;
-using Trulioo.Client.V3.Models.Fields;
 
-namespace Trulioo.Client.V3.Models.Verification
+namespace Trulioo.Client.V3.Models.Business
 {
     /// <summary>
-    /// The verification call for the Normalized API is a POST method call
+    /// The request to be passed to Client for a business search
     /// </summary>
-    public class VerifyRequest
+    public class BusinessVerifyRequest
     {
         /// <summary>
         ///  The type of verification to perform.
@@ -29,7 +28,7 @@ namespace Trulioo.Client.V3.Models.Verification
         public string CallBackUrl { get; set; }
 
         /// <summary>
-        /// If set, Trulioo will try to update the client synchronously within the timeout in seconds. If failed to accomplish, the transaction will be canceled.
+        /// If set, Trulioo will try to update the client syncronously within the timeout in seconds. If failed to accomplish, the transaction will be canceled.
         /// </summary>
         public int Timeout { get; set; }
 
@@ -40,16 +39,15 @@ namespace Trulioo.Client.V3.Models.Verification
         public bool CleansedAddress { get; set; }
 
         /// <summary>
-        /// Some datasources required your customer provide consent to access them.  Set that the customer has provided consent for each
+        /// Some datasources require your customer provide consent to access them.  Set that the customer has provided consent for each
         /// datasource that requires one.  If consent is not provided the datasource will not be queried.
-        /// The consent for the data sources which will be interrogated as a part of the request.
         /// Included only for the data sources which explicitly require consent
         /// </summary>
         public string[] ConsentForDataSources { get; set; }
-
+        
         /// <summary>
-        /// The country code for which the verification needs to be performed.
-        /// Two-letter alpha code for the country for which the verification needs to be performed. 
+        /// The country code for which the search needs to be performed
+        /// Two-letter alpha code for the country for which the search needs to be performed. 
         /// </summary>
         public string CountryCode { get; set; }
 
@@ -61,7 +59,7 @@ namespace Trulioo.Client.V3.Models.Verification
         /// <summary>
         /// The data field name-value pairs for the data elements on which the verification is to be performed
         /// </summary>
-        public DataFields DataFields { get; set; }
+        public BusinessDataFields BusinessDataFields { get; set; }
 
         /// <summary>
         /// 
