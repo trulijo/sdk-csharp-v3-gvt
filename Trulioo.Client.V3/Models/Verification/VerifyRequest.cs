@@ -31,7 +31,7 @@ namespace Trulioo.Client.V3.Models.Verification
         /// <summary>
         /// If set, Trulioo will try to update the client synchronously within the timeout in seconds. If failed to accomplish, the transaction will be canceled.
         /// </summary>
-        public int Timeout { get; set; }
+        public int? Timeout { get; set; }
 
         /// <summary>
         /// Set to true if you want to receive address cleanse information,
@@ -72,5 +72,22 @@ namespace Trulioo.Client.V3.Models.Verification
         /// Verbose Mode output flag. Default value is false.
         /// </summary>
         public bool VerboseMode { get; set; }
+
+        public ICollection<Metadata> RequestMetadata { get; set; }
+
+        public class Metadata
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <value>Metadata Channel.</value>
+            public string Channel { get; set; }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <value>Metadata Value.</value>
+            public string Value { get; set; }
+        }
     }
 }
