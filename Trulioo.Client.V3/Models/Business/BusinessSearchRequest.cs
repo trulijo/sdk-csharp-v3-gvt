@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Trulioo.Client.V3.Models.Errors;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Trulioo.Client.V3.Enums;
 
 namespace Trulioo.Client.V3.Models.Business
 {
@@ -9,6 +9,12 @@ namespace Trulioo.Client.V3.Models.Business
     /// </summary>
     public class BusinessSearchRequest
     {
+        /// <summary>
+        ///  The type of search to perform.
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public VerificationType SearchType { get; set; }
+
         /// <summary>
         ///  The Package ID to run the transaction under
         /// </summary>

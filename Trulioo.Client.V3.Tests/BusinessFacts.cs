@@ -1,8 +1,7 @@
-﻿using Trulioo.Client.V3.Models.Business;
+﻿using Trulioo.Client.V3.Enums;
+using Trulioo.Client.V3.Models.Business;
 using Trulioo.Client.V3.Models.Fields;
-using Trulioo.Client.V3.Models.Verification;
 using Xunit;
-using Business = Trulioo.Client.V3.Models.Fields.Business;
 
 namespace Trulioo.Client.V3.Tests
 {
@@ -37,7 +36,7 @@ namespace Trulioo.Client.V3.Tests
 
         [Theory(Skip = "Calls API")]
         [MemberData(nameof(BusinessVerifyTestData))]
-        public async void BusinessVerifyTest(VerifyRequest request)
+        public async void BusinessVerifyTest(BusinessVerifyRequest request)
         {
             using var client = await BaseFact.GetTruliooKYBClientAsync();
             var response = await client.TruliooBusiness.BusinessVerifyAsync(request);
@@ -88,6 +87,7 @@ namespace Trulioo.Client.V3.Tests
             {
                 new BusinessSearchRequest {
                     PackageId = BaseFact.PackageId,
+                    SearchType = VerificationType.Test,
                     CountryCode = "CA",
                     Timeout = 100,
                     Business = new BusinessSearchModel
@@ -128,46 +128,54 @@ namespace Trulioo.Client.V3.Tests
         {
             yield return new object[]
             {
-                new VerifyRequest
+                new BusinessVerifyRequest
                 {
+                    PackageId = BaseFact.PackageId,
+                    VerificationType = VerificationType.Test,
                     VerboseMode = true,
                     CountryCode = "CA",
-                    DataFields = new DataFields
+                    BusinessDataFields = new BusinessDataFields
                     {
-                        Business = new Business
+                        BusinessName = "BusinessName",
+                        TradestyleName = "TradestyleName",
+                        TaxIDNumber = "TaxIDNumber",
+                        BusinessRegistrationNumber = "BusinessRegistrationNumber",
+                        DayOfIncorporation = 1,
+                        MonthOfIncorporation = 2,
+                        YearOfIncorporation = 2003,
+                        JurisdictionOfIncorporation = "JurisdictionOfIncorporation",
+                        ShareholderListDocument = true,
+                        FinancialInformationDocument = true,
+                        EnhancedProfile = true,
+                        DunsNumber = "DunsNumber",
+                        Entities = true,
+                        PeopleOfSignificantControl = new List<PersonOfSignificantControl>
                         {
-                            BusinessName = "BusinessName",
-                            TradestyleName = "TradestyleName",
-                            TaxIDNumber = "TaxIDNumber",
-                            BusinessRegistrationNumber = "BusinessRegistrationNumber",
-                            DayOfIncorporation = 1,
-                            MonthOfIncorporation = 2,
-                            YearOfIncorporation = 2003,
-                            JurisdictionOfIncorporation = "JurisdictionOfIncorporation",
-                            ShareholderListDocument = true,
-                            FinancialInformationDocument = true,
-                            EnhancedProfile = true,
-                            DunsNumber = "DunsNumber",
-                            Entities = true,
-                            PeopleOfSignificantControl = new List<PersonOfSignificantControl>
+                            new PersonOfSignificantControl
                             {
-                                new PersonOfSignificantControl
-                                {
-                                    FirstGivenName = "FirstGivenName",
-                                    MiddleName = "MiddleName",
-                                    FirstSurName = "FirstSurName",
-                                    SecondSurname = "SecondSurname",
-                                    FullName = "FullName",
-                                    BusinessName = "BusinessName",
-                                    YearOfBirth = "YearOfBirth",
-                                    MonthOfBirth = "MonthOfBirth",
-                                    DayOfBirth = "DayOfBirth",
-                                }
-                            },
-                            Filings = true,
-                            ArticleOfAssociation = true,
-                            RegistrationDetails = true,
-                            AnnualReport = true,
+                                FirstGivenName = "FirstGivenName",
+                                MiddleName = "MiddleName",
+                                FirstSurName = "FirstSurName",
+                                SecondSurname = "SecondSurname",
+                                FullName = "FullName",
+                                BusinessName = "BusinessName",
+                                YearOfBirth = "YearOfBirth",
+                                MonthOfBirth = "MonthOfBirth",
+                                DayOfBirth = "DayOfBirth",
+                            }
+                        },
+                        Filings = true,
+                        ArticleOfAssociation = true,
+                        RegistrationDetails = true,
+                        AnnualReport = true,
+                        Location = new List<BusinessLocation>
+                        {
+                            new BusinessLocation
+                            {
+                                Index = 1,
+                                Address1 = "1234 Main Street",
+                                Country = "CA"
+                            }
                         }
                     }
                 },
