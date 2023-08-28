@@ -1,5 +1,11 @@
 # Trulioo SDK for C# Changelog
 
+## Version 1.0.4.0
+Serialize VerificationType of VerifyRequest as a string
+Timeout of VerifyRequest is nullable
+Change input type of BusinessVerifyAsync to be BusinessVerifyRequest
+Add SearchType to BusinessSearchRequest
+
 ## Version 1.0.3.0
 Add Configuration
 Add GetAllDatasourcesAsync to Configuration
