@@ -179,6 +179,17 @@ namespace Trulioo.Client.V3.Tests
                             ArticleOfAssociation = true,
                             RegistrationDetails = true,
                             AnnualReport = true,
+                            RegisterReport = true,
+                            CreditCheck = true,
+                            CreditReport = true,
+                            GISAExtract = true,
+                            VRExtract = true,
+                            RegisterCheck = true,
+                            TradeRegisterReport = true,
+                            BeneficialOwnersCheck = true,
+                            AnnualAccounts = true,
+                            FiledChanges = true,
+                            FiledDocuments = true
                         }
                     }
                 },
