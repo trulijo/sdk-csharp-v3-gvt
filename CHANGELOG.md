@@ -1,5 +1,19 @@
 # Trulioo SDK for C# Changelog
 
+## Version 1.0.5.0
+Added new document types
+	- RegisterReport
+	- CreditCheck
+	- CreditReport
+	- GISAExtract
+	- VRExtract
+	- RegisterCheck
+	- TradeRegisterReport
+	- BeneficialOwnersCheck
+	- AnnualAccounts
+	- FiledChanges
+	- FiledDocuments
+
 ## Version 1.0.4.0
 Serialize VerificationType of VerifyRequest as a string
 Timeout of VerifyRequest is nullable
