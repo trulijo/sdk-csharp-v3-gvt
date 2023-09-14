@@ -151,22 +151,5 @@ namespace Trulioo.Client.V3.Models.Fields
         /// Whether or not to retrieve filed documents
         /// </summary>
         public bool FiledDocuments { get; set; }
-        /// <summary>
-        /// Telephone number of the business to be verified
-        /// </summary>
-        public string Telephone { get; set; }
-
-        /// <summary>
-        /// CountrySpecific fields
-        /// {"Country" : {"Field1" : "Value",
-        /// "Field2" : "Value"
-        /// }}
-        /// </summary>
-        public CountrySpecific CountrySpecific { get; set; }
-
-        /// <summary>
-        /// Location Information
-        /// </summary>
-        public List<BusinessLocation> Location { get; set; }
     }
 }
