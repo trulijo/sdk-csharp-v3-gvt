@@ -151,6 +151,21 @@ namespace Trulioo.Client.V3.Models.Business
         public bool FiledDocuments { get; set; }
 
         /// <summary>
+        /// Whether or not to perform a complete plus transaction
+        /// </summary>
+        public bool CompletePlus { get; set; }
+
+        /// <summary>
+        /// Whether or not to retrieve article of authority document
+        /// </summary>
+        public bool ArticleOfAuthority { get; set; }
+
+        /// <summary>
+        /// Whether or not to retrieve agent address change document
+        /// </summary>
+        public bool AgentAddressChange { get; set; }
+
+        /// <summary>
         /// Telephone number of the business to be verified
         /// </summary>
         public string Telephone { get; set; }

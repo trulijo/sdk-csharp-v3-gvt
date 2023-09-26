@@ -179,6 +179,9 @@ namespace Trulioo.Client.V3.Tests
                         AnnualAccounts = true,
                         FiledChanges = true,
                         FiledDocuments = true,
+                        CompletePlus = true,
+                        ArticleOfAuthority = true,
+                        AgentAddressChange = true,
                         Location = new List<BusinessLocation>
                         {
                             new BusinessLocation
