@@ -63,7 +63,7 @@ namespace Trulioo.Client.V3
         /// </summary>
         /// <param name="request"> Request object containing parameters to verify business </param>
         /// <returns> Verification results </returns>
-        public async Task<VerifyResult> BusinessVerifyAsync(BusinessVerifyRequest request)
+        public async Task<VerifyResult> BusinessVerifyAsync(VerifyRequest request)
         {
             var resource = new ResourceName("verify");
             var response = await _context.PostAsync<VerifyResult>(_businessNamespace, resource, request).ConfigureAwait(false);

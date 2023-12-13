@@ -1,0 +1,31 @@
+mode: Mainline
+tag-prefix: '[v]'
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '\+semver:\s?(feature|minor)'
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
+no-bump-message: '\+semver:\s?(none|skip)'
+commit-message-incrementing: Enabled
+ignore:
+  sha: []
+merge-message-formats:
+  tfs: Merge branch '(?<SourceBranch>.+)' into '(?<TargetBranch>.+)'.+See merge request .+!(?<PullRequestNumber>\d+)$
+
+branches:
+  main:
+    tag: ''
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: true
+    is-mainline: true
+  feature:
+    mode: ContinuousDelivery
+    increment: Inherit
+    source-branches: [ 'main' ]
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: true
+    tracks-release-branches: true
+    is-release-branch: false
+    is-mainline: false
+
