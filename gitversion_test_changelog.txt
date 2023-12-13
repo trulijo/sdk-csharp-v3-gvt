@@ -1,0 +1,19 @@
+Commit '2'
+
+Commit '3 +semver: minor'
+
+Commit '4'
+
+Commit '5 +semver: major'
+
+Commit '6 +semver: major'
+
+Commit '7 +semver: minor'
+
+Commit '8'
+
+Commit '9 +semver: minor'
+
+Commit '10 +semver: minor'
+
+Commit '11 +semver: none'
