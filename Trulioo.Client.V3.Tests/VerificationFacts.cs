@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Trulioo.Client.V3.Enums;
 using Trulioo.Client.V3.Models.Errors;
 using Trulioo.Client.V3.Models.Fields;
 using Trulioo.Client.V3.Models.Response;
@@ -62,7 +61,7 @@ namespace Trulioo.Client.V3.Tests
             
         }
 
-        [Theory(Skip = "Calls API")]
+        [Theory]
         [MemberData(nameof(TransactionRecordDocumentData))]
         public async Task GetTransactionRecordDocument(string transactionRecordID, string documentField)
         {
@@ -80,11 +79,9 @@ namespace Trulioo.Client.V3.Tests
             {
                 new VerifyRequest
                 {
-                    PackageId = BaseFact.PackageId,
                     VerboseMode = true,
                     CountryCode = "CA",
                     CustomerReferenceID = "CustomerReferenceID-1",
-                    VerificationType = VerificationType.Test,
                     DataFields = new DataFields
                     {
                         PersonInfo = new PersonInfo
