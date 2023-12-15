@@ -1,0 +1,245 @@
+stages:
+  - Init
+  - Build
+  - QA
+  - Publish
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^main|pipeline$/ && $CI_PIPELINE_SOURCE == "push"  # [RULE]:
+      variables:
+        BUILD_TARGET: "build-and-publish"
+    - if: $CI_COMMIT_BRANCH =~ /^main|pipeline$/ && $CI_PIPELINE_SOURCE == "web"   # [RULE]:
+    - if: $CI_COMMIT_BRANCH == "github-pipeline" && $CI_PIPELINE_SOURCE == "schedule"   # [RULE]:
+      variables:
+        BUILD_TARGET: "publish-sdk-nuget-from-github" # already set by scheduled trigger
+
+# ***************************
+# GLOBAL VARIABLES
+# ***************************
+
+variables:
+  # variables visible on UI
+  BUILD_TARGET:
+    value: "check-public-sdk-nuget-version"
+    description: build-and-publish, check-public-sdk-nuget-version, publish-nuget
+  VERSION_INCREAMENT: "patch"     # not implemented, description: ('patch' by default) -- major,minor,patch
+  VERSION_TO_SET: ""              # customize version, use very carefully, can cause unrevertble result
+  DOTENV: ".env"
+  PACKAGE_NAME: "Trulioo.Client.V3"
+  NUGET_PACKAGE_ID: "Trulioo.Client.V3"
+
+# **********************
+# RUNNER TAGS
+# **********************
+
+.windows-tags: &windows-tags
+  tags:
+    - shared-services-docker-windows-4c-16gb
+
+.linux-tags: &linux-tags
+  tags:
+    - shared-services-docker-linux-2c-1gb
+
+# *********************
+# TEMPLATE JOBS
+# *********************
+.windows-requirements:
+  image: "732538232966.dkr.ecr.us-west-2.amazonaws.com/devops-builder:v3"
+  <<: *windows-tags
+  allow_failure: false
+
+.linux-requirements:
+  image: "732538232966.dkr.ecr.us-west-2.amazonaws.com/devops-builder:v2"
+  <<: *linux-tags
+  allow_failure: false
+
+# All pipeline jobs defined below
+
+# **********************
+# Initialization
+# **********************
+Initialization:
+  stage: Init
+  rules:
+    - if: $BUILD_TARGET != "check-public-sdk-nuget-version"
+  extends:
+    - .linux-requirements
+  before_script:
+    - dotnet tool install --global GitVersion.Tool
+    - export PATH=$PATH:$HOME/.dotnet/tools
+    - |
+      git status
+      git switch $CI_COMMIT_BRANCH    # change detached mode to branch mode
+      if $(git rev-parse --is-shallow-repository)
+      then
+          git fetch --unshallow       # unshallow git log
+      else
+          git fetch
+      fi
+      git status
+      dotnet-gitversion /nocache /config .pipeline/GitVersion.yml
+  script:
+    - |
+      echo "PR_SOURCE_BRANCH=$(eval echo $PR_SOURCE_BRANCH)" |
+        tee $DOTENV >&2
+      gitversion="$(.pipeline/scripts/bash/get_gitversion.sh)"
+      echo gitversion=$(jq 'tostring' <<<"$gitversion") |
+        tee -a $DOTENV >&2
+      echo BUILD_VERSION=$(jq --raw-output '.SemVer' <<<"$gitversion") |
+          tee -a $DOTENV >&2
+  artifacts:
+    reports:
+      dotenv: $DOTENV
+
+Check Public SDK Nuget Version:
+  stage: Init
+  rules:
+    - if: $BUILD_TARGET == "check-public-sdk-nuget-version"
+  extends:
+    - .linux-requirements
+  script:
+    - |
+      latest_nuget_version=$(.pipeline/scripts/bash/get_latest_nuget_version.sh)
+      echo "[INFO] latest_nuget_version=$latest_nuget_version" >&2
+      next_nuget_version=$(.pipeline/scripts/bash/get_next_nuget_version.sh "$latest_nuget_version")
+      echo "[INFO] next_nuget_version=$next_nuget_version" >&2
+
+# ****************
+# Build SDK Nuget
+# ****************
+Build test SDK Nuget:
+  stage: Build
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^main|pipeline$/ && $BUILD_TARGET == "build-and-publish"
+  extends:
+    - .linux-requirements
+  script:
+    - |
+      echo "[INFO] BUILD_VERSION=$BUILD_VERSION" >&2
+      dotnet build trulioo-sdk-csharp.sln --configuration Release --output ./bin -p:Version=$BUILD_VERSION
+      ls -l ./bin
+    #- |
+    #  if test "$IS_RELEASE_BUILD" = "true"
+    #  then
+    #      echo "[INFO] release Nuget version $BUILD_VERSION"
+    #
+    #      nuget_api_key=$NUGET_ORG_SDK_PUSH_API_KEY
+    #      nuget_push_url=$NUGET_ORG_SDK_PUSH_URL
+    #  else
+    #      echo "[INFO] test build Nuget version $BUILD_VERSION"
+    #
+    #      nuget_api_key=$INT_NUGETTEST_ORG_SDK_PUSH_API_KEY
+    #      nuget_push_url=$INT_NUGETTEST_ORG_SDK_PUSH_URL
+    #  fi
+    #- |
+    #  echo "[INFO] test build Nuget version $BUILD_VERSION"
+    #
+    #  nuget_api_key=$INT_NUGETTEST_ORG_SDK_PUSH_API_KEY
+    #  nuget_push_url=$INT_NUGETTEST_ORG_SDK_PUSH_URL
+    #
+    #  dotnet nuget push bin/$NUGET_PACKAGE_ID.$BUILD_VERSION.nupkg --api-key $nuget_api_key --source $nuget_push_url
+    #  # update ROCESSED_GH_SDK_HEAD_SHA only after publishing the release Nuget
+    #  if test "$IS_RELEASE_BUILD" = "true"
+    #  then
+    #      # grab HEAD SHA from cloned repo branch to avoid gap
+    #      $CI_PROJECT_DIR/.pipeline/scripts/bash/update_PROCESSED_GH_SDK_HEAD_SHA.sh $sdk_head_sha
+    #  fi
+  artifacts:
+    paths:
+      - bin/*
+
+# ****************
+# Signoff to publish
+# ****************
+Signoff to publish:
+  stage: QA
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^main|pipeline$/ && $BUILD_TARGET == "build-and-publish"
+      when: manual
+  extends:
+    - .linux-requirements
+  script:
+    - echo "[INFO] Publish was Signed off by $GITLAB_USER_LOGIN ($GITLAB_USER_EMAIL)" >&2
+    - exit 0
+
+## ****************
+## Decline to publish
+## ****************
+#Decline to publish:
+#  stage: QA
+#  rules:
+#    - if: $CI_COMMIT_BRANCH =~ /^main|pipeline$/ && $BUILD_TARGET == "build-and-publish"
+#      when: manual
+#  extends:
+#    - .linux-requirements
+#  script:
+#    - echo "[INFO] Publishing was declined by $CI_DEPLOY_USER" >&2
+#    - exit 1
+
+
+# ****************
+# Publish code change to Github
+# ****************
+Publish code change to Github:
+  stage: Publish
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^main|pipeline$/ && $BUILD_TARGET == "build-and-publish"
+  extends:
+    - .linux-requirements
+  before_script:
+    - PR_SOURCE_BRANCH=$(eval echo $PR_SOURCE_BRANCH)
+  script:
+    -  commit_title_message=$(.pipeline/scripts/bash/get_commit_title_message.sh $CI_PROJECT_ID $CI_COMMIT_SHA)
+    -  .pipeline/scripts/bash/publish_changes_to_github.sh $CI_REPOSITORY_URL $CI_COMMIT_BRANCH $GITHUB_SDK_REMOTE_URL $PR_SOURCE_BRANCH "$commit_title_message"
+    -  .pipeline/scripts/bash/create_github_pr.sh "$GITHUB_OWNER" "$GITHUB_REPO" "$PR_SOURCE_BRANCH" "$PR_TARGET_BRANCH" "$(jq --raw-output 'fromjson | .[-1].title' <<<$commit_title_message)" "pipeline_url$COLON $CI_PIPELINE_URL"
+  artifacts:
+    paths:
+      - bin/*
+    expire_in: 2 weeks
+
+## ****************
+## Publish SDK Nuget from Github
+## ****************
+Publish SDK Nuget from Github:
+  stage: Publish
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^main|pipeline$/ && $BUILD_TARGET == "build-and-publish"
+      when: manual
+    - if: $BUILD_TARGET == "publish-sdk-nuget-from-github"
+  needs:
+    - job: Publish code change to Github
+  extends:
+    - .linux-requirements
+  script:
+    - |
+      nuget_release_version=$(jq 'fromjson | .MajorMinorPatch' <<<"$gitversion")
+      echo "[INFO] nuget_release_version=$nuget_release_version"
+
+      git clone --branch master $GITHUB_SDK_REMOTE_URL github_sdk_repo
+      pushd github_sdk_repo
+
+      sdk_head_sha=$(git rev-parse HEAD)
+      echo "[INFO] SDK $PACKAGE_NAME HEAD SHA is $sdk_head_sha." >&2
+      if test "$sdk_head_sha" = "$PROCESSED_GH_SDK_HEAD_SHA"
+      then
+          echo "[INFO] There is no source change in Github $PACKAGE_NAME repository." >&2
+          echo "[INFO] Skip publishing the Nuget." >&2
+          exit 0
+      fi
+      dotnet build trulioo-sdk-csharp.sln --configuration Release --output ./bin -p:Version=$nuget_release_version
+      ls -l ./bin
+    - |
+      echo "[INFO] release Nuget version $release_nuget_version"
+
+      nuget_api_key=$NUGET_ORG_SDK_PUSH_API_KEY
+      nuget_push_url=$NUGET_ORG_SDK_PUSH_URL
+
+      dotnet nuget push bin/$NUGET_PACKAGE_ID.$BUILD_VERSION.nupkg --api-key $nuget_api_key --source $nuget_push_url
+
+      # grab HEAD SHA from cloned local repo branch to avoid realtime gap
+      $CI_PROJECT_DIR/.pipeline/scripts/bash/update_PROCESSED_GH_SDK_HEAD_SHA.sh $sdk_head_sha
+  artifacts:
+    paths:
+      - bin/*
+    expire_in: 2 months
